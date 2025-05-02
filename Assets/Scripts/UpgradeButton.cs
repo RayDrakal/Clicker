@@ -22,20 +22,20 @@ public class UpgradeButton : MonoBehaviour
 
     private void Start()
     {
-        DataController.GetInstance().LoadUpgradeButton(this);
+        DataController.Instance.LoadUpgradeButton(this);
         UpdateUI();
     }
 
     public void PurchaseUpgrade()
     {
-        if(DataController.GetInstance().GetGold() >= currentCost) {
-            DataController.GetInstance().SubGold(currentCost);
+        if(DataController.Instance.gold >= currentCost) {
+            DataController.Instance.gold -= currentCost;
             level++;
-            DataController.GetInstance().AddGoldPerClick(goldByUpgrade);
+            DataController.Instance.goldPerClick += goldByUpgrade;
             
             UpdateUpgrade();
             UpdateUI();
-            DataController.GetInstance().SaveUpgradeButton(this);
+            DataController.Instance.SaveUpgradeButton(this);
         }
     }
 

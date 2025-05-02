@@ -5,72 +5,58 @@ public class DataController : MonoBehaviour
 {
     private static DataController instance;
 
-    public static DataController GetInstance()
+    public static DataController Instance
     {
-        if(instance == null) {
-            instance = FindAnyObjectByType<DataController>();
+        get {
+            if (instance == null)
+            {
+                instance = FindAnyObjectByType<DataController>();
 
-            if(instance == null) {
-                GameObject container = new GameObject("DataController");
-                
-                instance = container.AddComponent<DataController>();
+                if (instance == null)
+                {
+                    GameObject container = new GameObject("DataController");
+
+                    instance = container.AddComponent<DataController>();
+                }
             }
+            return instance;
         }
-
-        return instance;
     }
 
     private ItemButton[] itemButtons;
 
-    int m_gold;
-    int m_goldPerClick;
+    public long gold
+    {
+        get
+        {
+            if(!PlayerPrefs.HasKey("Gold"))
+                return 0;
+            string tmpGold = PlayerPrefs.GetString("Gold");
+            return long.Parse(tmpGold);
+        }
+        set
+        {
+            PlayerPrefs.SetString("Gold", value.ToString());
+        }
+    }
+    public long goldPerClick
+    {
+        get
+        {
+            if (!PlayerPrefs.HasKey("GoldPerClick")) 
+                return 1;
+            string tmpGoldPerClick = PlayerPrefs.GetString("GoldPerClick");
+            return long.Parse(tmpGoldPerClick);
+        }
+        set
+        {
+            PlayerPrefs.SetString("GoldPerClick", value.ToString());
+        }
+    }
 
     private void Awake()
     {
-        m_gold = PlayerPrefs.GetInt("Gold");
-        m_goldPerClick = PlayerPrefs.GetInt("GoldPerClick", 1);
-
         itemButtons = FindObjectsByType<ItemButton>(FindObjectsSortMode.None);
-    }
-
-    public void SetGold(int newGold)
-    {
-        m_gold = newGold;
-        PlayerPrefs.SetInt("Gold", m_gold);
-    }
-
-    public void AddGold(int newGold)
-    {
-        m_gold += newGold;
-        SetGold(m_gold);
-    }
-
-    public void SubGold(int newGold)
-    {
-        m_gold -= newGold;
-        SetGold(m_gold);
-    }
-
-    public int GetGold()
-    {
-        return m_gold;
-    }
-
-    public int GetGoldPerClick()
-    {
-        return m_goldPerClick;
-    }
-
-    public void SetGoldPerClick(int newGoldPerClick)
-    {
-        m_goldPerClick = newGoldPerClick;
-        PlayerPrefs.SetInt("GoldPerClick", m_goldPerClick);
-    }
-
-    public void AddGoldPerClick(int newGoldPerClick)
-    {
-        m_goldPerClick += newGoldPerClick;
-        SetGoldPerClick (m_goldPerClick);
     }
 
     public void LoadUpgradeButton(UpgradeButton upgradeButton)

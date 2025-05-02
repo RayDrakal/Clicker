@@ -4,7 +4,14 @@ using UnityEngine.UI;
 
 public class ItemButton : MonoBehaviour
 {
+    public Color upgradableColor = Color.blue;
+    public Color notUpgradableColor = Color.red;
+    public Image colorImage;
     public Text itemDisplayer;
+
+    public CanvasGroup canvasGroup;
+    public Slider slider;
+
     public string itemName;
 
     public int level = 0;
@@ -25,24 +32,22 @@ public class ItemButton : MonoBehaviour
 
     private void Start()
     {
-        DataController.GetInstance().LoadItemButton(this);
-        currentCost = startCurrentCost;
-        goldPerSec = startGoldPerSec;
+        DataController.Instance.LoadItemButton(this);
         StartCoroutine("AddGoldLoop");
         UpdateUI();
     }
 
     public void PurchaseItem()
     {
-        if (DataController.GetInstance().GetGold() >= currentCost)
+        if (DataController.Instance.gold >= currentCost)
         {
             isPurchased = true;
-            DataController.GetInstance().SubGold(currentCost);
+            DataController.Instance.gold -= currentCost;
             level++;
             UpdateItem();
             UpdateUI();
 
-            DataController.GetInstance().SaveItemButton(this);
+            DataController.Instance.SaveItemButton(this);
         }
     }
 
@@ -52,7 +57,7 @@ public class ItemButton : MonoBehaviour
         {
             if(isPurchased)
             {
-                DataController.GetInstance().AddGold(goldPerSec);
+                DataController.Instance.gold += goldPerSec;
             }
 
             yield return new WaitForSeconds(1f);
@@ -68,7 +73,33 @@ public class ItemButton : MonoBehaviour
     public void UpdateUI()
     {
         itemDisplayer.text = itemName + "\nLevel: " + level + "\nCost: "
-            + currentCost + "\nGold Per Sec: " + goldPerSec + "\nisPurchased: "
-            + isPurchased;
+            + currentCost + "\nGold Per Sec: " + goldPerSec;
+
+        slider.minValue = 0;
+        slider.maxValue = currentCost;
+
+        slider.value = DataController.Instance.gold;
+
+        if (isPurchased)
+        {
+            canvasGroup.alpha = 1.0f;
+        }
+        else {
+            canvasGroup.alpha = 0.6f;
+        }
+
+        if(currentCost <= DataController.Instance.gold)
+        {
+            colorImage.color = upgradableColor;
+        }
+        else
+        {
+            colorImage.color = notUpgradableColor;
+        }
+    }
+
+    private void Update()
+    {
+        UpdateUI();
     }
 }
